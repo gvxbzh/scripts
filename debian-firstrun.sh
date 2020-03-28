@@ -7,10 +7,12 @@ if [ $? -ne 0 ]; then
     useradd -m -s /bin/bash $SYSUSER
 fi
 
-mount /dev/cdrom /mnt
-mount /dev/cdrom /mnt
-bash /mnt/Linux/install.sh
-umount /dev/cdrom
+# Proxmox : qemu agent
+apt install -y qemu-guest-agent
+
+# Proxmox : enable serial tty
+sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 console=tty0 console=ttyS0,115200"/' /etc/default/grub
+update-grub
 
 # Installation de sudo
 apt-get install -y sudo
