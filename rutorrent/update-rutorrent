@@ -52,7 +52,7 @@ fi
 if [ ! -d "$plugins_path/filemanager" ] ; then
     stop_rtorrent
     cd "$plugins_path"
-    git clone "filemanager_repo" filemanager
+    git clone "$filemanager_repo" filemanager
     updated="yes"
 else
     cd "$plugins_path/filemanager"
