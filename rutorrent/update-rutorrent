@@ -9,7 +9,7 @@ webserver_service="apache2.service"
 
 rutorrent_repo="https://github.com/Novik/ruTorrent.git"
 filemanager_repo="https://github.com/nelu/rutorrent-filemanager.git"
-filemanager_share_repo="https://github.com/nelu/rutorrent-filemanager-share.git"
+fileshare_repo="https://github.com/nelu/rutorrent-filemanager-share.git"
 mobile_repo="https://github.com/xombiemp/rutorrentMobile.git"
 
 updated="no"
@@ -69,23 +69,23 @@ else
     fi
 fi
 
-if [ ! -d "$plugins_path/filemanager-share" ] ; then
+if [ ! -d "$plugins_path/fileshare" ] ; then
     stop_rtorrent
     cd "$plugins_path"
-    git clone "$filemanager_share_repo" filemanager-share
+    git clone "$fileshare_repo" fileshare
     updated="yes"
 else
-    cd "$plugins_path/filemanager-share"
+    cd "$plugins_path/fileshare"
     git fetch
     localhash=$(git rev-parse HEAD)
     remotehash=$(git rev-parse origin/master)
     if [ "$remotehash" != "$localhash" ] ; then
         stop_rtorrent
         git pull
-        echo -e "filemanager-share plugin updated from $localhash to $remotehash\n"
+        echo -e "fileshare plugin updated from $localhash to $remotehash\n"
         updated="yes"
     else
-        echo -e "filemanager-share plugin is already at the latest version: $remotehash\n"
+        echo -e "fileshare plugin is already at the latest version: $remotehash\n"
     fi
 fi
 
