@@ -1,0 +1,101 @@
+#!/bin/bash
+
+# Based on https://raw.githubusercontent.com/xombiemp/ultimate-torrent-setup/master/update-rutorrent
+
+webroot_path="/var/www"
+rutorrent_path="$webroot_path/rutorrent"
+plugins_path="$rutorrent_path/plugins"
+webserver_service="apache2.service"
+
+rutorrent_repo="https://github.com/Novik/ruTorrent.git"
+filemanager_repo="https://github.com/nelu/rutorrent-filemanager.git"
+mobile_repo="https://github.com/xombiemp/rutorrentMobile.git"
+
+updated="no"
+
+stop_rtorrent () {
+    systemctl stop rtorrent.service
+}
+
+start_rtorrent () {
+    systemctl start rtorrent.service
+}
+
+restart_webserver () {
+    systemctl restart "$webserver_service"
+}
+
+if [ ! -d "$rutorrent_path" ] ; then
+    echo -e "INSTALLING ruTorrent"
+    stop_rtorrent
+    cd "$webroot_path"
+    git clone "$rutorrent_repo" rutorrent
+    echo -e "ruTorrent installed from git\n"
+    updated="yes"
+else
+    echo -e "UPDATING ruTorrent"
+    cd "$rutorrent_path"
+    git fetch
+    localhash=$(git rev-parse HEAD)
+    remotehash=$(git rev-parse origin/master)
+    if [ "$remotehash" != "$localhash" ] ; then
+        stop_rtorrent
+        git pull
+        echo -e "ruTorrent updated from $localhash to $remotehash\n"
+        updated="yes"
+    else
+        echo -e "ruTorrent is already at the latest version: $remotehash\n"
+    fi
+fi
+
+cd "$plugins_path"
+plugin_repo=$(git remote get-url origin)
+if [ "$plugin_repo" != "$filemanager_repo" ] ; then
+    stop_rtorrent
+    git init
+    git remote add -f origin "$filemanager_repo"
+    git pull origin master
+    git branch --set-upstream-to=origin/master master
+    updated="yes"
+else
+    git fetch
+    localhash=$(git rev-parse HEAD)
+    remotehash=$(git rev-parse origin/master)
+    if [ "$remotehash" != "$localhash" ] ; then
+        stop_rtorrent
+        git pull
+        echo -e "hwk plugins updated from $localhash to $remotehash\n"
+        updated="yes"
+    else
+        echo -e "hwk plugins are already at the latest version: $remotehash\n"
+    fi
+fi
+
+if [ ! -d "$plugins_path/mobile" ] ; then
+    stop_rtorrent
+    cd "$plugins_path"
+    git clone "$mobile_repo" mobile
+    updated="yes"
+else
+    cd "$plugins_path/mobile"
+    git fetch
+    localhash=$(git rev-parse HEAD)
+    remotehash=$(git rev-parse origin/master)
+    if [ "$remotehash" != "$localhash" ] ; then
+        stop_rtorrent
+        git pull
+        echo -e "mobile updated from $localhash to $remotehash\n"
+        updated="yes"
+    else
+        echo -e "mobile is already at the latest version: $remotehash\n"
+    fi
+fi
+
+if [ "$updated" == "yes" ] ; then
+    echo -e "Updates were installed. Restarting rtorrent..."
+    stop_rtorrent
+    restart_webserver
+    start_rtorrent
+else
+    echo -e "Already running the latest version of everything!\n"
+fi
