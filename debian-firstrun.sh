@@ -7,12 +7,16 @@ if [ $? -ne 0 ]; then
     useradd -m -s /bin/bash $SYSUSER
 fi
 
-# Proxmox : qemu agent
-apt install -y qemu-guest-agent
-
-# Proxmox : enable serial tty
-sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 console=tty0 console=ttyS0,115200"/' /etc/default/grub
-update-grub
+read -p "Install proxmox guest tools ?" yn
+if [[ $yn =~ ^[YyOo]$ ]]
+then
+    # Proxmox : qemu agent
+    apt install -y qemu-guest-agent
+    
+    # Proxmox : enable serial tty
+    sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 console=tty0 console=ttyS0,115200"/' /etc/default/grub
+    update-grub
+fi
 
 # Installation de sudo
 apt-get install -y sudo
