@@ -1,14 +1,14 @@
 #!/bin/bash
 
-read -p 'Utilisateur système: ' SYSUSER
+read -p 'System user: ' SYSUSER
 
 getent passwd $SYSUSER > /dev/null
 if [ $? -ne 0 ]; then
     useradd -m -s /bin/bash $SYSUSER
 fi
 
-read -p "Install proxmox guest tools ?" yn
-if [[ $yn =~ ^[YyOo]$ ]]; then
+read -n 1 -p "Install proxmox guest tools ?" PROXMOX
+if [[ $PROXMOX =~ ^[YyOo1]$ ]]; then
     # Proxmox : qemu agent
     apt install -y qemu-guest-agent
     
