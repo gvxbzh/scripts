@@ -8,8 +8,7 @@ if [ $? -ne 0 ]; then
 fi
 
 read -p "Install proxmox guest tools ?" yn
-if [[ $yn =~ ^[YyOo]$ ]]
-then
+if [[ $yn =~ ^[YyOo]$ ]]; then
     # Proxmox : qemu agent
     apt install -y qemu-guest-agent
     
