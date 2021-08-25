@@ -7,7 +7,7 @@ if [ $? -ne 0 ]; then
     useradd -m -s /bin/bash $SYSUSER
 fi
 
-read -n 1 -p "Install proxmox guest tools ?" PROXMOX
+read -n 1 -p 'Install proxmox guest tools ? ' PROXMOX
 if [[ $PROXMOX =~ ^[YyOo1]$ ]]; then
     # Proxmox : qemu agent
     apt install -y qemu-guest-agent
