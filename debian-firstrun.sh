@@ -44,16 +44,8 @@ sysctl -p
 
 # Installation et configuration de VIM
 apt install -y vim
-VIM_DEFAULTS=$(ls -a /usr/share/vim/vim*/defaults.vim | tail -n 1)
-cat <<EOF > /etc/vim/vimrc.local
-" This file loads the default vim options at the beginning and prevents
-" that they are being loaded again later. All other options that will be set,
-" are added, or overwrite the default settings. Add as many options as you
-" whish at the end of this file.
-
-" Load the defaults
-source $VIM_DEFAULTS
-
+cp $(ls -a /usr/share/vim/vim*/defaults.vim | tail -n 1) /etc/vim/vimrc.local
+cat <<EOF | sudo tee -a /etc/vim/vimrc.local
 " Prevent the defaults from being loaded again later, if the user doesn't have a local vimrc (~/.vimrc)
 let skip_defaults_vim = 1
 
